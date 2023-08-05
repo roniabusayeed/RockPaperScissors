@@ -37,8 +37,9 @@ struct GameButton: View {
                 .renderingMode(.original)
                 .resizable(resizingMode: .stretch)
                 .frame(maxWidth: 120, maxHeight: 120)
-                .background(.gray)
-                .clipShape(RoundedRectangle(cornerRadius: 5))
+                .background(.thinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .shadow(radius: 5)
         }
     }
 }
@@ -53,40 +54,60 @@ struct ContentView: View {
     @State private var playerScore = 0
     
     @State private var displayGameOverAlert: Bool = false
-    let gameOverString = "Game Over"
     
+    // Component views.
+    var gamePromptView: some View {
+        VStack (spacing: 10) {
+            Text("Play to \(playerHasToWin ? "Win": "Lose")")
+                .font(.title2)
+                
+                .foregroundStyle(.secondary)
+            Text(Move.getString(for: currentMove))
+                .font(.largeTitle.bold())
+        }
+        .foregroundColor(.black)
+        .frame(maxWidth: .infinity, maxHeight: 300)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .padding()
+        .shadow(radius: 5)
+    }
+    
+    var scoreView: some View {
+        Text("Score: \(playerScore)")
+            .font(.title2)
+            .foregroundColor(.white)
+    }
+    
+    var gameButtonViews: some View {
+        HStack (spacing: 20) {
+            GameButton(imageName: "rock") { buttonPressed(for: .rock)}
+            GameButton(imageName: "paper") { buttonPressed(for: .paper)}
+            GameButton(imageName: "scissors") { buttonPressed(for: .scissors)}
+        }
+        .padding()
+    }
+    
+    // Main UI body.
     var body: some View {
-        VStack {
-            Spacer()
+        ZStack {
             
-            Text("Score: \(playerScore)")
-                .font(.title3)
+            // App background.
+            RadialGradient(stops: [.init(color: .init(red: 0.027, green: 0.098, blue: 0.321), location: 0.3), .init(color: .init(red: 0.945, green: 0.502, blue: 0.492), location: 0.3)], center: .top, startRadius: 200, endRadius: 700).ignoresSafeArea()
             
-            Spacer()
-            
-            VStack (spacing: 10) {
-                Text("Play to \(playerHasToWin ? "Win": "Lose")")
-                    .font(.title2)
-                Text(Move.getString(for: currentMove))
-                    .font(.largeTitle.weight(.heavy))
+            // App foreground.
+            VStack {
+                Spacer()
+                scoreView
+                Spacer()
+                gamePromptView
+                Spacer()
+                gameButtonViews
+                .alert("Game Over", isPresented: $displayGameOverAlert) {
+                    Button ("Restart") { resetGame() }
+                } message: { Text("Your final score: \(playerScore)") }
+                Spacer()
             }
-            
-            Spacer()
-
-            HStack (spacing: 20) {
-                GameButton(imageName: "rock") { buttonPressed(for: .rock)}
-                GameButton(imageName: "paper") { buttonPressed(for: .paper)}
-                GameButton(imageName: "scissors") { buttonPressed(for: .scissors)}
-            }
-            .padding()
-            .alert(gameOverString, isPresented: $displayGameOverAlert) {
-                Button ("Restart") { resetGame() }
-            } message: {
-                Text("Your final score: \(playerScore)")
-            }
-            
-            
-            Spacer()
         }
     }
     
