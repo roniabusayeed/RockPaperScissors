@@ -27,6 +27,22 @@ enum MatchResult {
     case lose, win, tie
 }
 
+struct GameButton: View {
+    let imageName: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button { action() } label: {
+            Image(imageName)
+                .renderingMode(.original)
+                .resizable(resizingMode: .stretch)
+                .frame(maxWidth: 120, maxHeight: 120)
+                .background(.gray)
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+        }
+    }
+}
+
 struct ContentView: View {
     
     let maximumMoves = 10
@@ -44,21 +60,25 @@ struct ContentView: View {
             Spacer()
             
             Text("Score: \(playerScore)")
+                .font(.title3)
             
             Spacer()
             
             VStack (spacing: 10) {
-                Text("\(playerHasToWin ? "Win": "Lose")")
+                Text("Play to \(playerHasToWin ? "Win": "Lose")")
+                    .font(.title2)
                 Text(Move.getString(for: currentMove))
+                    .font(.largeTitle.weight(.heavy))
             }
             
             Spacer()
-            
-            VStack (spacing: 20) {
-                Button(Move.getString(for: .rock))      { buttonPressed(for: .rock) }
-                Button(Move.getString(for: .paper))     { buttonPressed(for: .paper) }
-                Button(Move.getString(for: .scissors))  { buttonPressed(for: .scissors) }
+
+            HStack (spacing: 20) {
+                GameButton(imageName: "rock") { buttonPressed(for: .rock)}
+                GameButton(imageName: "paper") { buttonPressed(for: .paper)}
+                GameButton(imageName: "scissors") { buttonPressed(for: .scissors)}
             }
+            .padding()
             .alert(gameOverString, isPresented: $displayGameOverAlert) {
                 Button ("Restart") { resetGame() }
             } message: {
