@@ -105,7 +105,7 @@ struct ContentView: View {
                 gameButtonViews
                 .alert("Game Over", isPresented: $displayGameOverAlert) {
                     Button ("Restart") { resetGame() }
-                } message: { Text("Your final score: \(playerScore)") }
+                } message: { Text("Your final score: \(playerScore)/\(maximumMoves)") }
                 Spacer()
             }
         }
