@@ -35,7 +35,10 @@ struct ContentView: View {
     @State private var currentMove = Move.getRandomMove()
     @State private var playerHasToWin = Bool.random() // Toggles between turns.
     @State private var playerScore = 0
-
+    
+    @State private var displayGameOverAlert: Bool = false
+    let gameOverString = "Game Over"
+    
     var body: some View {
         VStack {
             Spacer()
@@ -56,6 +59,12 @@ struct ContentView: View {
                 Button(Move.getString(for: .paper))     { buttonPressed(for: .paper) }
                 Button(Move.getString(for: .scissors))  { buttonPressed(for: .scissors) }
             }
+            .alert(gameOverString, isPresented: $displayGameOverAlert) {
+                Button ("Restart") { resetGame() }
+            } message: {
+                Text("Your final score: \(playerScore)")
+            }
+            
             
             Spacer()
         }
@@ -76,11 +85,24 @@ struct ContentView: View {
         // Keep track of current number of moves.
         currentNumberOfMoves += 1
         
-        //TODO: Handle more than maximum number of moves.
+        // Handle when current number of moves hits the maximum number of moves.
+        if currentNumberOfMoves == maximumMoves {
+            displayGameOverAlert = true
+        }
         
-        // Next move.
+        // Prompt for the next move.
+        nextMove()
+    }
+    
+    private func nextMove() {
         currentMove = Move.getRandomMove()
         playerHasToWin.toggle()
+    }
+    
+    private func resetGame() {
+        currentNumberOfMoves = 0
+        playerScore = 0
+        nextMove()
     }
     
     private static func userMatchResultWhenUserHasToWin(computerMove: Move, playerMove: Move) -> MatchResult {
