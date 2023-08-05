@@ -2,6 +2,9 @@
 
 Welcome to the Rock-Paper-Scissors game – a classic hand game implemented in SwiftUI!
 
+### Screenshtos
+<img src="images/screenshot.png" width="300">
+
 ### How to Play
 
 1. Clone the repository to your local machine.
